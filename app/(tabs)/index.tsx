@@ -180,7 +180,7 @@ export default function BuncoGameController() {
           style={styles.scoreButton}
           onPress={() => addPoints(11)}
         >
-          <ThemedText type="title" style={styles.buttonText}>+11</ThemedText>
+          <ThemedText type="title" style={styles.buttonText}>4, 5, 6</ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity
