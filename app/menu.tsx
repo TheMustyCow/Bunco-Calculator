@@ -67,20 +67,19 @@ export default function MenuScreen() {
       {/* Content */}
       <ScrollView style={[styles.scrollView, styles.content]}>
         {/* How to Play Section */}
-        <View style={[styles.section, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}>
+        <View style={[styles.section, { backgroundColor: Colors[colorScheme].sectionBackground }]}>
           <ThemedText type="subtitle" style={styles.sectionTitle} colorScheme={colorScheme}>How to Play</ThemedText>
           <ThemedText style={styles.instructions} colorScheme={colorScheme}>
             1. Tap on a team score above to select which team to add points to{'\n\n'}
             2. Press the scoring buttons to add points to the selected team{'\n\n'}
             3. Bunco gives +21 points!{'\n\n'}
             4. Use undo/redo arrows in the top bar to correct mistakes{'\n\n'}
-            5. Press CLEAR SCORES to reset both teams{'\n\n'}
-            6. Use sun/moon buttons for light/dark mode
+            5. Press CLEAR SCORES to reset both teams
           </ThemedText>
         </View>
 
         {/* Haptics Section */}
-        <View style={[styles.section, { backgroundColor: Colors[colorScheme].background }]}>
+        <View style={[styles.section, { backgroundColor: Colors[colorScheme].sectionBackground }]}>
           <View style={styles.settingRow}>
             <ThemedText style={styles.settingLabel} colorScheme={colorScheme}>Haptic Feedback</ThemedText>
             <Switch
@@ -90,13 +89,14 @@ export default function MenuScreen() {
               thumbColor={settings.hapticsEnabled ? Colors[colorScheme].background : '#f4f3f4'}
             />
           </View>
-          <ThemedText style={[styles.settingDescription, { color: Colors[colorScheme].icon }]} colorScheme={colorScheme}>
+          {/* Subtext for haptic feedback */}
+          {/* <ThemedText style={[styles.settingDescription, { color: Colors[colorScheme].icon }]} colorScheme={colorScheme}>
             Enable vibration feedback when pressing buttons
-          </ThemedText>
+          </ThemedText> */}
         </View>
 
         {/* Theme Section */}
-        <View style={[styles.section, { backgroundColor: Colors[colorScheme].background }]}>
+        <View style={[styles.section, { backgroundColor: Colors[colorScheme].sectionBackground }]}>
           <ThemedText style={styles.sectionTitle} colorScheme={colorScheme}>Appearance</ThemedText>
           <View style={styles.themeRow}>
             <TouchableOpacity
