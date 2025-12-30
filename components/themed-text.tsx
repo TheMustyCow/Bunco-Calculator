@@ -7,6 +7,7 @@ export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  colorScheme?: 'light' | 'dark';
 };
 
 export function ThemedText({
@@ -14,9 +15,11 @@ export function ThemedText({
   lightColor,
   darkColor,
   type = 'default',
+  colorScheme: propColorScheme,
   ...rest
 }: ThemedTextProps) {
-  const colorScheme = useColorScheme();
+  const systemColorScheme = useColorScheme();
+  const colorScheme = propColorScheme ?? systemColorScheme;
   const color = lightColor || darkColor
     ? (colorScheme === 'dark' ? darkColor : lightColor) || Colors[colorScheme ?? 'light'].text
     : Colors[colorScheme ?? 'light'].text;

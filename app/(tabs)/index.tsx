@@ -89,7 +89,7 @@ export default function BuncoGameController() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={styles.container} colorScheme={colorScheme}>
       {/* Top Navigation Bar */}
       <View style={[styles.topBar, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}>
         <View style={styles.topBarLeft}>
@@ -143,8 +143,8 @@ export default function BuncoGameController() {
           ]}
           onPress={() => setSelectedTeam('team1')}
         >
-          <ThemedText type="title" style={styles.teamLabel}>Team 1</ThemedText>
-          <ThemedText type="title" style={styles.scoreText}>{team1Score}</ThemedText>
+          <ThemedText type="title" style={styles.teamLabel} colorScheme={colorScheme}>Team 1</ThemedText>
+           <ThemedText type="title" style={styles.scoreText} colorScheme={colorScheme}>{team1Score}</ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -155,8 +155,8 @@ export default function BuncoGameController() {
           ]}
           onPress={() => setSelectedTeam('team2')}
         >
-          <ThemedText type="title" style={styles.teamLabel}>Team 2</ThemedText>
-          <ThemedText type="title" style={styles.scoreText}>{team2Score}</ThemedText>
+          <ThemedText type="title" style={styles.teamLabel} colorScheme={colorScheme}>Team 2</ThemedText>
+           <ThemedText type="title" style={styles.scoreText} colorScheme={colorScheme}>{team2Score}</ThemedText>
         </TouchableOpacity>
       </View>
 

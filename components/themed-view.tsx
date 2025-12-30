@@ -6,10 +6,12 @@ import { Colors } from '@/constants/theme';
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
   darkColor?: string;
+  colorScheme?: 'light' | 'dark';
 };
 
-export function ThemedView({ style, lightColor, darkColor, ...otherProps }: ThemedViewProps) {
-  const colorScheme = useColorScheme();
+export function ThemedView({ style, lightColor, darkColor, colorScheme: propColorScheme, ...otherProps }: ThemedViewProps) {
+  const systemColorScheme = useColorScheme();
+  const colorScheme = propColorScheme ?? systemColorScheme;
   const backgroundColor = lightColor || darkColor
     ? (colorScheme === 'dark' ? darkColor : lightColor) || Colors[colorScheme ?? 'light'].background
     : Colors[colorScheme ?? 'light'].background;
