@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useSettings } from '@/hooks/use-settings';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -12,9 +17,26 @@ type GameState = {
 };
 
 export default function BuncoGameController() {
+  const router = useRouter();
+  const { settings } = useSettings();
   const systemColorScheme = useColorScheme();
   const [forcedTheme, setForcedTheme] = useState<'light' | 'dark' | null>(null);
-  const colorScheme = forcedTheme || systemColorScheme || 'light';
+
+  useFocusEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('forced_theme');
+        if (stored !== null) {
+          setForcedTheme(JSON.parse(stored));
+        }
+      } catch (error) {
+        console.error('Failed to load theme:', error);
+      }
+    };
+    loadTheme();
+  });
+
+  const colorScheme: 'light' | 'dark' = (forcedTheme || systemColorScheme || 'light') as 'light' | 'dark';
 
   const [team1Score, setTeam1Score] = useState(0);
   const [team2Score, setTeam2Score] = useState(0);
@@ -64,28 +86,18 @@ export default function BuncoGameController() {
     }
   };
 
-  const setLightMode = () => {
-    setForcedTheme('light');
-  };
 
-  const setDarkMode = () => {
-    setForcedTheme('dark');
-  };
 
   const openSettings = () => {
-    Alert.alert(
-      'How to Play Bunco',
-      '1. Tap on a team score above to select which team to add points to\n\n' +
-      '2. Press the scoring buttons to add points to the selected team\n\n' +
-      '3. Bunco gives +21 points!\n\n' +
-      '4. Use undo/redo arrows in the top bar to correct mistakes\n\n' +
-      '5. Press CLEAR SCORES to reset both teams\n\n' +
-      '6. Use sun/moon buttons for light/dark mode\n\n\n' +
-      'Future settings will include:\n• Change team names\n• Game rules\n• Sound preferences',
-      [
-        { text: 'OK' }
-      ]
-    );
+    router.push('/menu');
+  };
+
+
+
+  const handlePressIn = () => {
+    if (settings.hapticsEnabled && process.env.EXPO_OS === 'ios') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
   };
 
   return (
@@ -93,14 +105,14 @@ export default function BuncoGameController() {
       {/* Top Navigation Bar */}
       <View style={[styles.topBar, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}>
         <View style={styles.topBarLeft}>
-          <TouchableOpacity onPress={undo} style={styles.topBarButton} disabled={historyIndex <= 0}>
+          <TouchableOpacity onPress={undo} onPressIn={handlePressIn} style={styles.topBarButton} disabled={historyIndex <= 0}>
             <IconSymbol
               name="arrow.uturn.left"
               size={24}
               color={historyIndex <= 0 ? '#999' : Colors[colorScheme ?? 'light'].tint}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={redo} style={styles.topBarButton} disabled={historyIndex >= history.length - 1}>
+          <TouchableOpacity onPress={redo} onPressIn={handlePressIn} style={styles.topBarButton} disabled={historyIndex >= history.length - 1}>
             <IconSymbol
               name="arrow.uturn.right"
               size={24}
@@ -109,20 +121,6 @@ export default function BuncoGameController() {
           </TouchableOpacity>
         </View>
         <View style={styles.topBarRight}>
-          <TouchableOpacity onPress={setLightMode} style={styles.topBarButton}>
-            <IconSymbol
-              name="sun.max.fill"
-              size={24}
-              color={colorScheme === 'light' ? '#FFD700' : Colors[colorScheme ?? 'light'].tint}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={setDarkMode} style={styles.topBarButton}>
-            <IconSymbol
-              name="moon.fill"
-              size={24}
-              color={colorScheme === 'dark' ? '#FFD700' : Colors[colorScheme ?? 'light'].tint}
-            />
-          </TouchableOpacity>
           <TouchableOpacity onPress={openSettings} style={styles.topBarButton}>
             <IconSymbol
               name="gear"
@@ -142,6 +140,7 @@ export default function BuncoGameController() {
             { backgroundColor: Colors[colorScheme ?? 'light'].background }
           ]}
           onPress={() => setSelectedTeam('team1')}
+          onPressIn={handlePressIn}
         >
           <ThemedText type="title" style={styles.teamLabel} colorScheme={colorScheme}>Team 1</ThemedText>
            <ThemedText type="title" style={styles.scoreText} colorScheme={colorScheme}>{team1Score}</ThemedText>
@@ -154,6 +153,7 @@ export default function BuncoGameController() {
             { backgroundColor: Colors[colorScheme ?? 'light'].background }
           ]}
           onPress={() => setSelectedTeam('team2')}
+          onPressIn={handlePressIn}
         >
           <ThemedText type="title" style={styles.teamLabel} colorScheme={colorScheme}>Team 2</ThemedText>
            <ThemedText type="title" style={styles.scoreText} colorScheme={colorScheme}>{team2Score}</ThemedText>
@@ -165,20 +165,23 @@ export default function BuncoGameController() {
         <TouchableOpacity
           style={styles.scoreButton}
           onPress={() => addPoints(1)}
+          onPressIn={handlePressIn}
         >
           <ThemedText type="title" style={styles.buttonText}>+1</ThemedText>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* Removed the +5 button. */}
+        {/* <TouchableOpacity
           style={styles.scoreButton}
           onPress={() => addPoints(5)}
         >
           <ThemedText type="title" style={styles.buttonText}>+5</ThemedText>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={styles.scoreButton}
           onPress={() => addPoints(11)}
+          onPressIn={handlePressIn}
         >
           <ThemedText type="title" style={styles.buttonText}>4, 5, 6</ThemedText>
         </TouchableOpacity>
@@ -186,6 +189,7 @@ export default function BuncoGameController() {
         <TouchableOpacity
           style={[styles.scoreButton, styles.buncoButton]}
           onPress={() => addPoints(21)}
+          onPressIn={handlePressIn}
         >
           <ThemedText type="title" style={styles.buttonText}>BUNCO</ThemedText>
           {/* <ThemedText type="subtitle" style={styles.buttonSubText}>+21</ThemedText> */}
@@ -194,6 +198,7 @@ export default function BuncoGameController() {
         <TouchableOpacity
           style={[styles.scoreButton, styles.clearButton]}
           onPress={clearScores}
+          onPressIn={handlePressIn}
         >
           <ThemedText type="title" style={styles.buttonText}>CLEAR SCORES</ThemedText>
         </TouchableOpacity>
