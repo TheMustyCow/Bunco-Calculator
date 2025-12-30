@@ -52,6 +52,13 @@ A simple and clean mobile app for controlling Bunco games. Keep track of team sc
 3. Open in Expo Go, simulator, or web browser
 
 ## Application View
-![](assets/screenshots/mobileAppView.png)
+<!-- ![](assets/screenshots/mobileViewDark.png)
+![](assets/screenshots/mobileViewLight.png)
+![](assets/screenshots/mobileSettingsView.png) -->
 
+<div style="display: flex; gap: 10px;">
+  <img src="assets/screenshots/mobileViewDark.png" width="250">
+  <img src="assets/screenshots/mobileViewLight.png" width="250">
+  <img src="assets/screenshots/mobileSettingsView.png" width="250">
+</div>
 
